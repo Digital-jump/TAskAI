@@ -1,5 +1,5 @@
 import React from 'react';
-import { HashRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Kanban from './pages/Kanban';
@@ -9,13 +9,15 @@ import Chat from './pages/Chat';
 import EmployeeList from './pages/EmployeeList';
 import EmployeeDetail from './pages/EmployeeDetail';
 import Payroll from './pages/Payroll';
+import Landing from './pages/Landing';
 import Sidebar from './components/Sidebar';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
-  const isLoginPage = location.pathname === '/login';
+  // Pages that don't need the sidebar
+  const isPublicPage = location.pathname === '/login' || location.pathname === '/';
 
-  if (isLoginPage) {
+  if (isPublicPage) {
     return <>{children}</>;
   }
 
@@ -34,8 +36,8 @@ const App: React.FC = () => {
     <HashRouter>
       <Layout>
         <Routes>
+          <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/projects" element={<Kanban />} />
           <Route path="/tickets" element={<Tickets />} />

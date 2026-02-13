@@ -28,7 +28,7 @@ const Login: React.FC = () => {
           }}
         ></div>
         <div className="relative z-10 flex flex-col justify-between h-full p-12 lg:p-16 text-white">
-          <div>
+          <div onClick={() => navigate('/')} className="cursor-pointer">
             <div className="flex items-center gap-2 mb-8">
               <span className="material-symbols-outlined text-4xl">work_history</span>
               <h1 className="text-2xl font-bold tracking-tight">WorkFlow Pro</h1>
@@ -53,9 +53,14 @@ const Login: React.FC = () => {
 
         <div className="w-full max-w-[440px] flex flex-col">
           {/* Mobile Header (Logo) */}
-          <div className="md:hidden flex items-center gap-2 mb-8 justify-center">
-            <span className="material-symbols-outlined text-primary text-3xl">work_history</span>
-            <h2 className="text-text-main text-xl font-bold">WorkFlow Pro</h2>
+          <div className="md:hidden flex items-center justify-center mb-8 relative">
+             <button onClick={() => navigate('/')} className="absolute left-0 text-gray-500 hover:text-primary">
+                <span className="material-symbols-outlined">arrow_back</span>
+             </button>
+            <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-primary text-3xl">work_history</span>
+                <h2 className="text-text-main text-xl font-bold">WorkFlow Pro</h2>
+            </div>
           </div>
 
           {/* Card Container */}
@@ -76,7 +81,7 @@ const Login: React.FC = () => {
                 </label>
                 <div className="relative">
                   <input
-                    className="block w-full rounded-lg border-gray-300 bg-white text-text-main shadow-sm focus:border-primary focus:ring-primary sm:text-sm py-3 px-4 placeholder:text-gray-400"
+                    className="block w-full rounded-lg border-gray-300 bg-white text-text-main shadow-sm focus:border-primary focus:ring-primary sm:text-sm py-3 px-4 placeholder:text-gray-400 transition-colors"
                     id="email"
                     type="email"
                     placeholder="name@company.com"
@@ -91,7 +96,7 @@ const Login: React.FC = () => {
                 </label>
                 <div className="relative rounded-lg shadow-sm">
                   <input
-                    className="block w-full rounded-lg border-gray-300 bg-white text-text-main shadow-sm focus:border-primary focus:ring-primary sm:text-sm py-3 px-4 pr-10 placeholder:text-gray-400"
+                    className="block w-full rounded-lg border-gray-300 bg-white text-text-main shadow-sm focus:border-primary focus:ring-primary sm:text-sm py-3 px-4 pr-10 placeholder:text-gray-400 transition-colors"
                     id="password"
                     type="password"
                     placeholder="Enter your password"
@@ -156,6 +161,10 @@ const Login: React.FC = () => {
             <a href="#" className="hover:text-primary transition-colors">
               Terms of Service
             </a>
+            <span className="text-gray-300 md:hidden">|</span>
+             <button onClick={() => navigate('/')} className="hover:text-primary transition-colors md:hidden">
+              Home
+            </button>
           </div>
         </div>
       </div>
