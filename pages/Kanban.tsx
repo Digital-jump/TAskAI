@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { db, Task } from '../utils/db';
+import { db, Task, AccessLevel } from '../utils/db';
 import Modal from '../components/Modal';
 
 const Kanban: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newTask, setNewTask] = useState({ title: '', tags: '', priority: 'Medium' });
+  const [role, setRole] = useState<AccessLevel>('User');
 
   useEffect(() => {
     setTasks(db.tasks.getAll());
+    setRole(db.auth.getCurrentRole());
   }, [isModalOpen]);
 
   const refreshTasks = () => setTasks(db.tasks.getAll());
@@ -26,28 +28,40 @@ const Kanban: React.FC = () => {
   };
 
   const moveTask = (task: Task) => {
-      const statuses: Task['status'][] = ['Backlog', 'To Do', 'In Progress', 'Done'];
+      const statuses: Task['status'][] = ['Backlog', 'To Do', 'In Progress', 'In Review', 'Done'];
       const currentIndex = statuses.indexOf(task.status);
-      const nextStatus = statuses[currentIndex + 1];
+      
+      let nextStatus = statuses[currentIndex + 1];
+
+      // Logic: If user is not Admin/HR/Manager, they cannot move from 'In Review' to 'Done' directly.
+      // Logic: If user is Developer, 'In Progress' -> 'In Review' (Done)
+      
+      const isManager = ['Admin', 'HR-Admin'].includes(role);
+
+      if (task.status === 'In Review' && !isManager) {
+          alert('Only managers can approve tasks.');
+          return;
+      }
+      
       if (nextStatus) {
           db.tasks.update(task.id, { status: nextStatus });
           refreshTasks();
       }
   };
 
-  const renderColumn = (status: Task['status'], title: string) => {
+  const renderColumn = (status: Task['status'], title: string, isApprovalColumn = false) => {
       const columnTasks = tasks.filter(t => t.status === status);
       return (
-        <div className="w-80 flex-shrink-0 flex flex-col h-full max-h-full bg-[#f0f4f6]/50 rounded-xl px-2 py-2">
+        <div className={`w-80 flex-shrink-0 flex flex-col h-full max-h-full ${isApprovalColumn ? 'bg-orange-50 border border-orange-100' : 'bg-[#f0f4f6]/50'} rounded-xl px-2 py-2`}>
             <div className="flex items-center justify-between mb-3 px-2 pt-1">
             <div className="flex items-center gap-2">
-                <h3 className="text-sm font-bold text-text-main uppercase tracking-wide">{title}</h3>
-                <span className="bg-white text-[#5d7275] text-xs font-bold px-2 py-0.5 rounded-full shadow-sm">{columnTasks.length}</span>
+                <h3 className={`text-sm font-bold uppercase tracking-wide ${isApprovalColumn ? 'text-orange-700' : 'text-text-main'}`}>{title}</h3>
+                <span className={`text-xs font-bold px-2 py-0.5 rounded-full shadow-sm ${isApprovalColumn ? 'bg-orange-200 text-orange-800' : 'bg-white text-[#5d7275]'}`}>{columnTasks.length}</span>
             </div>
             </div>
             <div className="flex-1 overflow-y-auto pr-1 pb-2 flex flex-col gap-3 custom-scrollbar">
                 {columnTasks.map(task => (
-                    <div key={task.id} onClick={() => moveTask(task)} className="bg-white p-4 rounded-xl shadow-card hover:shadow-card-hover group cursor-pointer transition-all border border-transparent hover:border-primary/20">
+                    <div key={task.id} onClick={() => moveTask(task)} className={`bg-white p-4 rounded-xl shadow-card hover:shadow-card-hover group cursor-pointer transition-all border border-transparent ${status === 'In Review' ? 'border-l-4 border-l-orange-400' : 'hover:border-primary/20'}`}>
                     <div className="flex justify-between items-start mb-2">
                         <span className="bg-gray-100 text-gray-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">{task.priority}</span>
                     </div>
@@ -56,7 +70,12 @@ const Kanban: React.FC = () => {
                         <div className="flex gap-1">
                             {task.tags.map(tag => <span key={tag} className="text-[10px] bg-slate-100 px-1 rounded text-slate-500">{tag}</span>)}
                         </div>
-                        {status !== 'Done' && <span className="text-xs text-primary font-bold opacity-0 group-hover:opacity-100 transition-opacity">Move &rarr;</span>}
+                        {status !== 'Done' && (
+                             <span className="text-xs text-primary font-bold opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                                 {status === 'In Review' ? (role === 'Admin' ? 'Approve' : 'Waiting') : 'Move'}
+                                 {status !== 'In Review' && <span>&rarr;</span>}
+                             </span>
+                        )}
                     </div>
                 </div>
                 ))}
@@ -69,13 +88,9 @@ const Kanban: React.FC = () => {
     <div className="flex flex-col h-full bg-white">
       {/* Header */}
       <header className="h-16 border-b border-[#e7f1f3] px-6 flex items-center justify-between bg-[#f8fbfc] shrink-0">
-         <div className="flex items-center w-full max-w-md">
-            <div className="relative w-full group">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-sub group-focus-within:text-primary transition-colors">
-                    <span className="material-symbols-outlined text-[20px]">search</span>
-                </span>
-                <input className="w-full h-10 pl-10 pr-4 bg-white border border-[#e7f1f3] rounded-lg text-sm focus:outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition-all placeholder-[#9db3b8]" placeholder="Search tasks..." type="text"/>
-            </div>
+         <div className="flex items-center gap-4">
+             <h2 className="text-lg font-bold text-text-main">Project Kanban</h2>
+             {role === 'Developer' && <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-bold">Role: Developer</span>}
          </div>
          <button onClick={() => setIsModalOpen(true)} className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-lg text-sm font-bold shadow-sm hover:shadow-md transition-all">
             <span className="material-symbols-outlined text-[20px]">add</span>
@@ -89,6 +104,7 @@ const Kanban: React.FC = () => {
             {renderColumn('Backlog', 'Backlog')}
             {renderColumn('To Do', 'To Do')}
             {renderColumn('In Progress', 'In Progress')}
+            {renderColumn('In Review', 'In Review', true)}
             {renderColumn('Done', 'Done')}
         </div>
       </div>

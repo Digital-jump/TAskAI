@@ -1,10 +1,13 @@
 import { v4 as uuidv4 } from 'uuid';
 
 // Types
+export type AccessLevel = 'Admin' | 'Developer' | 'HR-Admin' | 'User';
+
 export interface Employee {
   id: string;
   name: string;
-  role: string;
+  role: string; // Job Title
+  accessLevel: AccessLevel; // Permission Role
   department: string;
   email: string;
   phone: string;
@@ -12,12 +15,17 @@ export interface Employee {
   status: 'Active' | 'On Leave' | 'Terminated';
   joinedDate: string;
   location: string;
+  socials?: {
+      linkedin?: string;
+      twitter?: string;
+      github?: string;
+  };
 }
 
 export interface Task {
   id: string;
   title: string;
-  status: 'Backlog' | 'To Do' | 'In Progress' | 'Done';
+  status: 'Backlog' | 'To Do' | 'In Progress' | 'In Review' | 'Done';
   priority: 'Low' | 'Medium' | 'High';
   assigneeId?: string;
   comments: number;
@@ -68,44 +76,92 @@ export interface PayrollRecord {
   month: string;
 }
 
+export interface LeaveRequest {
+    id: string;
+    employeeId: string;
+    employeeName: string;
+    type: 'Sick' | 'Casual' | 'Vacation';
+    startDate: string;
+    endDate: string;
+    reason: string;
+    status: 'Pending' | 'Approved' | 'Rejected';
+    days: number;
+}
+
+export interface Holiday {
+    id: string;
+    name: string;
+    date: string;
+    type: 'National' | 'Observance';
+}
+
+export interface Invoice {
+    id: string;
+    invoiceNo: string;
+    date: string;
+    client: string;
+    amount: number;
+    status: 'Paid' | 'Pending' | 'Overdue';
+}
+
 // Seed Data
 const seedData = () => {
   const employees: Employee[] = [
     {
       id: '1',
       name: 'Sarah Jenkins',
-      role: 'Senior Product Designer',
+      role: 'Product Manager',
+      accessLevel: 'Admin',
       department: 'Product',
       email: 'sarah.j@workflow.pro',
       phone: '+1 (555) 123-4567',
       avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD3ArRu2R3vywdS3aeEMrtEo_BQqowScYWF2cMLzPVK9wD3ocT7QOvHecAjd4IwJL4RE8UDbRXsTtozhYvprTPIQmS3weD2-UUOGpTs-EbRV8fDVFL3zDx6W6NEYonrl5_aaNloMH8LjHUBE2jWzynFrTkLISryqMVxrDJorkJLsPgsies5FfPosn-jNe4GNy8_3knEAH4SDITLc83FjH-wNy33MD3U1MfRsS860P-44MfjT7BLtKP6Q8WxJDvHg2E8Rwp-BjzRjX12',
       status: 'Active',
       joinedDate: '2021-08-15',
-      location: 'San Francisco, CA'
+      location: 'San Francisco, CA',
+      socials: { linkedin: 'sarahjenkins', twitter: 'sjenkins_pm' }
     },
     {
       id: '2',
       name: 'Michael Chen',
-      role: 'Engineering Manager',
-      department: 'Engineering',
+      role: 'HR Manager',
+      accessLevel: 'HR-Admin',
+      department: 'Human Resources',
       email: 'm.chen@workflow.pro',
       phone: '+1 (555) 987-6543',
       avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAUWsGzWNA2wE8O5vRbgeGp5_JFHcj6UoyXrirzMCIUqjW54EB2Io2rEjReGH6grlLHdRZmJXf1mIgRr1K7z4P0mu_kj_9sxNr39wh7zkm8JQu07vKGhsZ6EtHLsWWaluNOiOfwp79-mOucmtE3bujZ-xwWUFFpDXC1Nq8f66OzOvK9p8Hr9_MZWE2Ap-QPcFYkw26iZhKY6GG58Ak-EXy-hlGNKLnU3cSIN5cGTlCuzwhCXKyOwtFRty1ieBa7O5OGzWxFxI5wqrew',
       status: 'On Leave',
       joinedDate: '2020-03-10',
-      location: 'New York, NY'
+      location: 'New York, NY',
+      socials: { linkedin: 'michaelchenhr' }
     },
     {
       id: '3',
       name: 'Alex Rivera',
-      role: 'Frontend Developer',
+      role: 'Senior Developer',
+      accessLevel: 'Developer',
       department: 'Engineering',
       email: 'alex.r@workflow.pro',
       phone: '+1 (555) 456-7890',
       avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA0qSHpJfpr1JQJVywh6-Dp1uuqU10lbuVaaDoiOuD6NWQg_e0vFCNJnQEQ5ucEGnjnh8IN4gmBeKggd7MOzl8rKEfffX0UmKsKFCG84ScMvq0zAIBlVi5Z0el29xQ916_Z47LOenGwbWmbJ38RGivBwnZwaGjQUMzj66ohV9Zc9at3w-MbA8TsTc8jyDoV65TAreiz8YyzXk50KcDrZfff2xDFNUp58x-KzY2bER_dG-NLXzntyNPySynlRf40AhWB-h_YsMEmeiIJ',
       status: 'Active',
       joinedDate: '2022-01-20',
-      location: 'Remote'
+      location: 'Remote',
+      socials: { github: 'arivera', twitter: 'alexcodes' }
+    },
+    {
+      id: '4',
+      name: 'Jessica Wu',
+      role: 'Marketing Associate',
+      accessLevel: 'User',
+      department: 'Marketing',
+      email: 'j.wu@workflow.pro',
+      phone: '+1 (555) 333-2222',
+      avatar: 'https://ui-avatars.com/api/?name=Jessica+Wu&background=random',
+      status: 'Active',
+      joinedDate: '2023-05-12',
+      location: 'San Francisco, CA',
+      socials: { linkedin: 'jessicawu_mkt' }
     }
   ];
 
@@ -146,6 +202,15 @@ const seedData = () => {
         tags: ['Meeting'],
         comments: 1,
         dueDate: 'Oct 10'
+    },
+    {
+        id: 't5',
+        title: 'API Integration for Payment Gateway',
+        status: 'In Review',
+        priority: 'High',
+        tags: ['Backend'],
+        comments: 2,
+        assigneeId: '3'
     }
   ];
 
@@ -239,11 +304,50 @@ const seedData = () => {
        }
   ];
 
+  const leaveRequests: LeaveRequest[] = [
+      {
+          id: 'l1',
+          employeeId: '1',
+          employeeName: 'Sarah Jenkins',
+          type: 'Sick',
+          startDate: '2023-10-24',
+          endDate: '2023-10-26',
+          reason: 'Flu',
+          status: 'Approved',
+          days: 3
+      },
+      {
+          id: 'l2',
+          employeeId: '3',
+          employeeName: 'Alex Rivera',
+          type: 'Vacation',
+          startDate: '2023-11-15',
+          endDate: '2023-11-20',
+          reason: 'Family trip',
+          status: 'Pending',
+          days: 5
+      }
+  ];
+
+  const holidays: Holiday[] = [
+      { id: 'h1', name: 'Thanksgiving', date: '2023-11-23', type: 'National' },
+      { id: 'h2', name: 'Christmas Day', date: '2023-12-25', type: 'National' },
+      { id: 'h3', name: 'New Year', date: '2024-01-01', type: 'National' }
+  ];
+
+  const invoices: Invoice[] = [
+      { id: 'i1', invoiceNo: 'INV-2023-001', date: '2023-10-15', client: 'Acme Corp', amount: 4500, status: 'Paid' },
+      { id: 'i2', invoiceNo: 'INV-2023-002', date: '2023-10-20', client: 'Stark Ind', amount: 2100, status: 'Pending' }
+  ];
+
   localStorage.setItem('db_employees', JSON.stringify(employees));
   localStorage.setItem('db_tasks', JSON.stringify(tasks));
   localStorage.setItem('db_tickets', JSON.stringify(tickets));
   localStorage.setItem('db_messages', JSON.stringify(messages));
   localStorage.setItem('db_payroll', JSON.stringify(payroll));
+  localStorage.setItem('db_leave', JSON.stringify(leaveRequests));
+  localStorage.setItem('db_holidays', JSON.stringify(holidays));
+  localStorage.setItem('db_invoices', JSON.stringify(invoices));
   localStorage.setItem('db_initialized', 'true');
 };
 
@@ -258,6 +362,17 @@ const setCollection = (key: string, data: any[]) => {
 };
 
 export const db = {
+  auth: {
+      login: (role: AccessLevel) => {
+          localStorage.setItem('currentUserRole', role);
+      },
+      getCurrentRole: (): AccessLevel => {
+          return (localStorage.getItem('currentUserRole') as AccessLevel) || 'User';
+      },
+      logout: () => {
+          localStorage.removeItem('currentUserRole');
+      }
+  },
   employees: {
     getAll: () => getCollection<Employee>('db_employees'),
     get: (id: string) => getCollection<Employee>('db_employees').find(e => e.id === id),
@@ -345,5 +460,39 @@ export const db = {
         setCollection('db_payroll', [...currentPayroll, ...newRecords]);
         return newRecords;
     }
+  },
+  leave: {
+      getAll: () => getCollection<LeaveRequest>('db_leave'),
+      add: (request: Omit<LeaveRequest, 'id' | 'status'>) => {
+          const list = getCollection<LeaveRequest>('db_leave');
+          const newItem = { ...request, id: uuidv4(), status: 'Pending' as const };
+          setCollection('db_leave', [...list, newItem]);
+          return newItem;
+      },
+      updateStatus: (id: string, status: 'Approved' | 'Rejected') => {
+           const list = getCollection<LeaveRequest>('db_leave');
+           const updated = list.map(l => l.id === id ? {...l, status} : l);
+           setCollection('db_leave', updated);
+      },
+      getHolidays: () => getCollection<Holiday>('db_holidays'),
+      addHoliday: (holiday: Omit<Holiday, 'id'>) => {
+        const list = getCollection<Holiday>('db_holidays');
+        const newItem = { ...holiday, id: uuidv4() };
+        setCollection('db_holidays', [...list, newItem]);
+        return newItem;
+      },
+      deleteHoliday: (id: string) => {
+        const list = getCollection<Holiday>('db_holidays');
+        setCollection('db_holidays', list.filter(h => h.id !== id));
+      }
+  },
+  invoices: {
+      getAll: () => getCollection<Invoice>('db_invoices'),
+      add: (inv: Omit<Invoice, 'id'>) => {
+          const list = getCollection<Invoice>('db_invoices');
+          const newItem = { ...inv, id: uuidv4() };
+          setCollection('db_invoices', [...list, newItem]);
+          return newItem;
+      }
   }
 };

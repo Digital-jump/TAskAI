@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { db, AccessLevel } from '../utils/db';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const [selectedRole, setSelectedRole] = useState<AccessLevel>('Admin');
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    db.auth.login(selectedRole);
     navigate('/dashboard');
   };
 
@@ -76,16 +79,36 @@ const Login: React.FC = () => {
 
             <form onSubmit={handleLogin} className="space-y-5">
               <div className="space-y-2">
+                <label className="block text-sm font-medium text-text-main">
+                  Select Demo Role
+                </label>
+                <div className="relative">
+                   <select 
+                        value={selectedRole} 
+                        onChange={(e) => setSelectedRole(e.target.value as AccessLevel)}
+                        className="block w-full rounded-lg border-gray-300 bg-white text-text-main shadow-sm focus:border-primary focus:ring-primary sm:text-sm py-3 px-4 placeholder:text-gray-400 transition-colors"
+                    >
+                        <option value="Admin">Admin</option>
+                        <option value="Developer">Developer</option>
+                        <option value="HR-Admin">HR Admin</option>
+                        <option value="User">User (Employee)</option>
+                    </select>
+                </div>
+                <p className="text-xs text-gray-500">For demonstration purposes, select a role to simulate permissions.</p>
+              </div>
+              
+              <div className="space-y-2">
                 <label className="block text-sm font-medium text-text-main" htmlFor="email">
                   Email Address
                 </label>
                 <div className="relative">
                   <input
-                    className="block w-full rounded-lg border-gray-300 bg-white text-text-main shadow-sm focus:border-primary focus:ring-primary sm:text-sm py-3 px-4 placeholder:text-gray-400 transition-colors"
+                    className="block w-full rounded-lg border-gray-300 bg-white text-text-main shadow-sm focus:border-primary focus:ring-primary sm:text-sm py-3 px-4 placeholder:text-gray-400 transition-colors disabled:bg-gray-100"
                     id="email"
                     type="email"
                     placeholder="name@company.com"
-                    defaultValue="admin@workflow.pro"
+                    value={selectedRole.toLowerCase().replace(' ', '') + '@workflow.pro'}
+                    disabled
                   />
                 </div>
               </div>
@@ -108,28 +131,6 @@ const Login: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between pt-1">
-                <div className="flex items-center">
-                  <input
-                    id="remember-me"
-                    name="remember-me"
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-                  />
-                  <label htmlFor="remember-me" className="ml-2 block text-sm text-text-main">
-                    Keep me logged in
-                  </label>
-                </div>
-                <div className="text-sm">
-                  <a
-                    href="#"
-                    className="font-medium text-primary hover:text-primary-hover underline decoration-transparent hover:decoration-current transition-all"
-                  >
-                    Forgot password?
-                  </a>
-                </div>
-              </div>
-
               <div className="pt-2">
                 <button
                   type="submit"
@@ -139,18 +140,6 @@ const Login: React.FC = () => {
                 </button>
               </div>
             </form>
-
-            <div className="mt-6 text-center">
-              <p className="text-sm text-text-sub">
-                Don't have an account?
-                <a
-                  href="#"
-                  className="font-medium text-primary hover:text-primary-hover ml-1"
-                >
-                  Contact Admin
-                </a>
-              </p>
-            </div>
           </div>
 
           <div className="mt-8 flex justify-center gap-6 text-xs text-text-sub">

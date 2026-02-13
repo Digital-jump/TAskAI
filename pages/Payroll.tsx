@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { db, PayrollRecord, Employee } from '../utils/db';
+import { db, PayrollRecord, Employee, AccessLevel } from '../utils/db';
 
 const Payroll: React.FC = () => {
   const [records, setRecords] = useState<(PayrollRecord & { employee?: Employee })[]>([]);
+  const [hasPermission, setHasPermission] = useState(true);
 
   const loadData = () => {
       const payrollData = db.payroll.getAll();
@@ -16,6 +17,11 @@ const Payroll: React.FC = () => {
   };
 
   useEffect(() => {
+    const role = db.auth.getCurrentRole();
+    if (!['Admin', 'HR-Admin'].includes(role)) {
+        setHasPermission(false);
+        return;
+    }
     loadData();
   }, []);
 
@@ -25,6 +31,18 @@ const Payroll: React.FC = () => {
         loadData();
       }
   };
+
+  if (!hasPermission) {
+      return (
+          <div className="flex h-full items-center justify-center">
+              <div className="text-center">
+                  <span className="material-symbols-outlined text-6xl text-gray-300 mb-4">lock</span>
+                  <h2 className="text-xl font-bold text-gray-900">Access Denied</h2>
+                  <p className="text-gray-500 mt-2">You do not have permission to view payroll information.</p>
+              </div>
+          </div>
+      );
+  }
 
   return (
     <div className="flex-1 flex flex-col h-full overflow-hidden relative">

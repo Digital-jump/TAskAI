@@ -10,12 +10,16 @@ import EmployeeList from './pages/EmployeeList';
 import EmployeeDetail from './pages/EmployeeDetail';
 import Payroll from './pages/Payroll';
 import Landing from './pages/Landing';
+import About from './pages/About';
+import Contact from './pages/Contact';
+import Leave from './pages/Leave';
+import Invoices from './pages/Invoices';
 import Sidebar from './components/Sidebar';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
   // Pages that don't need the sidebar
-  const isPublicPage = location.pathname === '/login' || location.pathname === '/';
+  const isPublicPage = ['/login', '/', '/about', '/contact'].includes(location.pathname);
 
   if (isPublicPage) {
     return <>{children}</>;
@@ -37,6 +41,8 @@ const App: React.FC = () => {
       <Layout>
         <Routes>
           <Route path="/" element={<Landing />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/projects" element={<Kanban />} />
@@ -46,6 +52,8 @@ const App: React.FC = () => {
           <Route path="/employees" element={<EmployeeList />} />
           <Route path="/employees/:id" element={<EmployeeDetail />} />
           <Route path="/payroll" element={<Payroll />} />
+          <Route path="/leave" element={<Leave />} />
+          <Route path="/invoices" element={<Invoices />} />
         </Routes>
       </Layout>
     </HashRouter>

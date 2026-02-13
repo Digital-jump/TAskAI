@@ -1,36 +1,16 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import PublicNavbar from '../components/PublicNavbar';
 
 const Landing: React.FC = () => {
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-white font-display text-text-main scroll-smooth">
-      {/* Navigation */}
-      <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-md border-b border-gray-100 z-50 transition-all">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo(0, 0)}>
-            <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-               <span className="material-symbols-outlined text-2xl">grid_view</span>
-            </div>
-            <span className="text-xl font-bold tracking-tight text-primary">WorkFlow Pro</span>
-          </div>
-          <div className="hidden md:flex items-center gap-8 text-sm font-bold text-gray-500">
-            <a href="#home" className="hover:text-primary transition-colors">Home</a>
-            <a href="#about" className="hover:text-primary transition-colors">About Us</a>
-            <a href="#contact" className="hover:text-primary transition-colors">Contact</a>
-          </div>
-          <button 
-            onClick={() => navigate('/login')}
-            className="px-5 py-2.5 bg-primary hover:bg-primary-hover text-white text-sm font-bold rounded-lg transition-all shadow-lg shadow-primary/20 hover:shadow-primary/30"
-          >
-            Log In
-          </button>
-        </div>
-      </nav>
+      <PublicNavbar />
 
       {/* Hero Section */}
-      <section id="home" className="pt-32 pb-20 px-6 bg-gradient-to-b from-white to-background-light">
+      <section id="home" className="pt-32 pb-20 px-6 bg-gradient-to-b from-white to-background-light min-h-[90vh] flex items-center">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
            <div className="order-2 lg:order-1">
               <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-6 border border-primary/20">
@@ -48,7 +28,7 @@ const Landing: React.FC = () => {
                  <button onClick={() => navigate('/login')} className="px-8 py-4 bg-primary text-white font-bold rounded-xl shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all transform hover:-translate-y-1">
                     Get Started Free
                  </button>
-                 <button onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-white text-text-main border border-gray-200 font-bold rounded-xl hover:bg-gray-50 transition-all">
+                 <button onClick={() => navigate('/about')} className="px-8 py-4 bg-white text-text-main border border-gray-200 font-bold rounded-xl hover:bg-gray-50 transition-all">
                     Learn More
                  </button>
               </div>
@@ -83,13 +63,13 @@ const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* About Section */}
-      <section id="about" className="py-24 bg-white px-6">
+      {/* Features Preview */}
+      <section className="py-24 bg-white px-6">
          <div className="max-w-7xl mx-auto">
             <div className="text-center max-w-3xl mx-auto mb-16">
                 <h2 className="text-sm font-bold text-primary tracking-widest uppercase mb-2">Features</h2>
                 <h3 className="text-3xl md:text-4xl font-extrabold mb-4 text-text-main">Why WorkFlow Pro?</h3>
-                <p className="text-gray-500 text-lg">We integrate every aspect of your business into a single, intuitive interface so you can focus on what matters most.</p>
+                <p className="text-gray-500 text-lg">We integrate every aspect of your business into a single, intuitive interface.</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                {[
@@ -106,75 +86,6 @@ const Landing: React.FC = () => {
                    </div>
                ))}
             </div>
-         </div>
-      </section>
-
-      {/* Contact Section */}
-      <section id="contact" className="py-24 px-6 bg-text-main text-white relative overflow-hidden">
-         <div className="absolute top-0 right-0 w-1/2 h-full bg-primary/5 rounded-l-full blur-3xl pointer-events-none"></div>
-         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 relative z-10">
-             <div>
-                 <span className="text-primary font-bold tracking-widest uppercase text-sm">Contact Us</span>
-                 <h2 className="text-4xl font-extrabold mb-6 mt-2">Let's start a conversation</h2>
-                 <p className="text-gray-400 mb-10 text-lg max-w-md">Have questions about our enterprise plans? Our team is ready to help you optimize your workflow.</p>
-                 
-                 <div className="space-y-8">
-                     <div className="flex items-center gap-5">
-                         <div className="size-12 rounded-full bg-white/10 flex items-center justify-center text-primary border border-white/10">
-                             <span className="material-symbols-outlined">mail</span>
-                         </div>
-                         <div>
-                             <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Email</p>
-                             <p className="font-bold text-lg">support@workflow.pro</p>
-                         </div>
-                     </div>
-                     <div className="flex items-center gap-5">
-                         <div className="size-12 rounded-full bg-white/10 flex items-center justify-center text-primary border border-white/10">
-                             <span className="material-symbols-outlined">location_on</span>
-                         </div>
-                         <div>
-                             <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Office</p>
-                             <p className="font-bold text-lg">123 Innovation Dr, San Francisco</p>
-                         </div>
-                     </div>
-                     <div className="flex items-center gap-5">
-                         <div className="size-12 rounded-full bg-white/10 flex items-center justify-center text-primary border border-white/10">
-                             <span className="material-symbols-outlined">call</span>
-                         </div>
-                         <div>
-                             <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Phone</p>
-                             <p className="font-bold text-lg">+1 (555) 123-4567</p>
-                         </div>
-                     </div>
-                 </div>
-             </div>
-             
-             <div className="bg-white p-8 rounded-3xl shadow-2xl text-text-main">
-                 <h3 className="text-2xl font-bold mb-6">Send us a message</h3>
-                 <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-                     <div className="grid grid-cols-2 gap-4">
-                         <div>
-                             <label className="block text-xs font-bold text-gray-500 uppercase mb-1">First Name</label>
-                             <input type="text" className="w-full rounded-lg border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary transition-colors font-medium" placeholder="John" />
-                         </div>
-                         <div>
-                             <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Last Name</label>
-                             <input type="text" className="w-full rounded-lg border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary transition-colors font-medium" placeholder="Doe" />
-                         </div>
-                     </div>
-                     <div>
-                         <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Email</label>
-                         <input type="email" className="w-full rounded-lg border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary transition-colors font-medium" placeholder="john@company.com" />
-                     </div>
-                     <div>
-                         <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Message</label>
-                         <textarea rows={4} className="w-full rounded-lg border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring-primary transition-colors font-medium resize-none" placeholder="Tell us about your team..."></textarea>
-                     </div>
-                     <button className="w-full py-4 bg-primary text-white font-bold rounded-xl hover:bg-primary-hover transition-colors shadow-lg shadow-primary/20">
-                         Send Message
-                     </button>
-                 </form>
-             </div>
          </div>
       </section>
 
