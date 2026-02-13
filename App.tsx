@@ -14,6 +14,9 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import Leave from './pages/Leave';
 import Invoices from './pages/Invoices';
+import Meetings from './pages/Meetings';
+import SocialFeed from './pages/SocialFeed';
+import AIChat from './pages/AIChat';
 import Sidebar from './components/Sidebar';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -54,6 +57,9 @@ const App: React.FC = () => {
           <Route path="/payroll" element={<Payroll />} />
           <Route path="/leave" element={<Leave />} />
           <Route path="/invoices" element={<Invoices />} />
+          <Route path="/meetings" element={<Meetings />} />
+          <Route path="/social" element={<SocialFeed />} />
+          <Route path="/ai-chat" element={<AIChat />} />
         </Routes>
       </Layout>
     </HashRouter>

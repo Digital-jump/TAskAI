@@ -31,6 +31,7 @@ export interface Task {
   comments: number;
   tags: string[];
   dueDate?: string;
+  blockedBy?: string; // ID of the task that must be completed first
 }
 
 export interface Ticket {
@@ -52,6 +53,11 @@ export interface AttendanceRecord {
   clockIn: string | null;
   clockOut: string | null;
   status: 'Present' | 'Absent' | 'Late' | 'Half Day';
+  location?: {
+      lat: number;
+      lng: number;
+      address?: string;
+  };
 }
 
 export interface Message {
@@ -102,6 +108,30 @@ export interface Invoice {
     client: string;
     amount: number;
     status: 'Paid' | 'Pending' | 'Overdue';
+}
+
+export interface Meeting {
+    id: string;
+    title: string;
+    date: string;
+    startTime: string;
+    endTime: string;
+    attendees: string[]; // employee IDs
+    type: 'Video' | 'Audio' | 'In-Person';
+    link?: string;
+}
+
+export interface Post {
+    id: string;
+    authorId: string;
+    authorName: string;
+    authorAvatar: string;
+    content: string;
+    image?: string;
+    type: 'Announcement' | 'Celebration' | 'General';
+    timestamp: string;
+    likes: number;
+    comments: number;
 }
 
 // Seed Data
@@ -173,7 +203,8 @@ const seedData = () => {
       priority: 'Low',
       tags: ['Research'],
       comments: 0,
-      assigneeId: '1'
+      assigneeId: '1',
+      dueDate: '2023-10-30'
     },
     {
       id: 't2',
@@ -183,7 +214,8 @@ const seedData = () => {
       tags: ['Bug'],
       comments: 3,
       assigneeId: '3',
-      dueDate: 'Today'
+      dueDate: '2023-10-25',
+      blockedBy: 't1' // Example dependency
     },
     {
       id: 't3',
@@ -192,7 +224,8 @@ const seedData = () => {
       priority: 'Medium',
       tags: ['Dev'],
       comments: 6,
-      assigneeId: '3'
+      assigneeId: '3',
+      dueDate: '2023-11-01'
     },
     {
         id: 't4',
@@ -201,7 +234,7 @@ const seedData = () => {
         priority: 'Medium',
         tags: ['Meeting'],
         comments: 1,
-        dueDate: 'Oct 10'
+        dueDate: '2023-10-10'
     },
     {
         id: 't5',
@@ -210,7 +243,8 @@ const seedData = () => {
         priority: 'High',
         tags: ['Backend'],
         comments: 2,
-        assigneeId: '3'
+        assigneeId: '3',
+        dueDate: '2023-10-28'
     }
   ];
 
@@ -340,6 +374,52 @@ const seedData = () => {
       { id: 'i2', invoiceNo: 'INV-2023-002', date: '2023-10-20', client: 'Stark Ind', amount: 2100, status: 'Pending' }
   ];
 
+  const meetings: Meeting[] = [
+      { 
+          id: 'mt1', 
+          title: 'Q4 Product Roadmap Review', 
+          date: '2023-10-25', 
+          startTime: '10:00', 
+          endTime: '11:00', 
+          attendees: ['1', '3', '4'], 
+          type: 'Video' 
+      },
+      { 
+          id: 'mt2', 
+          title: 'Weekly Standup', 
+          date: '2023-10-26', 
+          startTime: '09:00', 
+          endTime: '09:30', 
+          attendees: ['1', '2', '3', '4'], 
+          type: 'Audio' 
+      }
+  ];
+
+  const posts: Post[] = [
+      {
+          id: 'po1',
+          authorId: '1',
+          authorName: 'Sarah Jenkins',
+          authorAvatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD3ArRu2R3vywdS3aeEMrtEo_BQqowScYWF2cMLzPVK9wD3ocT7QOvHecAjd4IwJL4RE8UDbRXsTtozhYvprTPIQmS3weD2-UUOGpTs-EbRV8fDVFL3zDx6W6NEYonrl5_aaNloMH8LjHUBE2jWzynFrTkLISryqMVxrDJorkJLsPgsies5FfPosn-jNe4GNy8_3knEAH4SDITLc83FjH-wNy33MD3U1MfRsS860P-44MfjT7BLtKP6Q8WxJDvHg2E8Rwp-BjzRjX12',
+          content: 'Huge shoutout to @AlexRivera for shipping the new mobile dashboard ahead of schedule! 🚀',
+          type: 'Celebration',
+          timestamp: '2 hours ago',
+          likes: 12,
+          comments: 4
+      },
+      {
+          id: 'po2',
+          authorId: '2',
+          authorName: 'Michael Chen',
+          authorAvatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAUWsGzWNA2wE8O5vRbgeGp5_JFHcj6UoyXrirzMCIUqjW54EB2Io2rEjReGH6grlLHdRZmJXf1mIgRr1K7z4P0mu_kj_9sxNr39wh7zkm8JQu07vKGhsZ6EtHLsWWaluNOiOfwp79-mOucmtE3bujZ-xwWUFFpDXC1Nq8f66OzOvK9p8Hr9_MZWE2Ap-QPcFYkw26iZhKY6GG58Ak-EXy-hlGNKLnU3cSIN5cGTlCuzwhCXKyOwtFRty1ieBa7O5OGzWxFxI5wqrew',
+          content: 'Just a reminder that the office will be closed this Friday for the holiday. Enjoy the long weekend everyone!',
+          type: 'Announcement',
+          timestamp: '1 day ago',
+          likes: 24,
+          comments: 0
+      }
+  ];
+
   localStorage.setItem('db_employees', JSON.stringify(employees));
   localStorage.setItem('db_tasks', JSON.stringify(tasks));
   localStorage.setItem('db_tickets', JSON.stringify(tickets));
@@ -348,6 +428,8 @@ const seedData = () => {
   localStorage.setItem('db_leave', JSON.stringify(leaveRequests));
   localStorage.setItem('db_holidays', JSON.stringify(holidays));
   localStorage.setItem('db_invoices', JSON.stringify(invoices));
+  localStorage.setItem('db_meetings', JSON.stringify(meetings));
+  localStorage.setItem('db_posts', JSON.stringify(posts));
   localStorage.setItem('db_initialized', 'true');
 };
 
@@ -427,10 +509,11 @@ export const db = {
         const session = localStorage.getItem('db_attendance_session');
         return session ? JSON.parse(session) : null;
     },
-    clockIn: () => {
+    clockIn: (location?: {lat: number, lng: number}) => {
         const session = {
             startTime: new Date().toISOString(),
-            status: 'Active'
+            status: 'Active',
+            location: location
         };
         localStorage.setItem('db_attendance_session', JSON.stringify(session));
         return session;
@@ -492,6 +575,30 @@ export const db = {
           const list = getCollection<Invoice>('db_invoices');
           const newItem = { ...inv, id: uuidv4() };
           setCollection('db_invoices', [...list, newItem]);
+          return newItem;
+      }
+  },
+  meetings: {
+      getAll: () => getCollection<Meeting>('db_meetings'),
+      add: (meeting: Omit<Meeting, 'id'>) => {
+          const list = getCollection<Meeting>('db_meetings');
+          const newItem = { ...meeting, id: uuidv4() };
+          setCollection('db_meetings', [...list, newItem]);
+          return newItem;
+      }
+  },
+  posts: {
+      getAll: () => getCollection<Post>('db_posts'),
+      add: (post: Omit<Post, 'id' | 'likes' | 'comments' | 'timestamp'>) => {
+          const list = getCollection<Post>('db_posts');
+          const newItem = { 
+              ...post, 
+              id: uuidv4(), 
+              likes: 0, 
+              comments: 0, 
+              timestamp: 'Just now' 
+          };
+          setCollection('db_posts', [newItem, ...list]);
           return newItem;
       }
   }

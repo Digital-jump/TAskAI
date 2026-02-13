@@ -2,12 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { db } from '../utils/db';
 
 const Attendance: React.FC = () => {
-  const [session, setSession] = useState<{startTime: string, status: string} | null>(null);
+  const [session, setSession] = useState<{startTime: string, status: string, location?: {lat: number, lng: number}} | null>(null);
   const [timeWorked, setTimeWorked] = useState('00h 00m 00s');
+  const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
+  const [loadingLoc, setLoadingLoc] = useState(false);
+  const [remindersEnabled, setRemindersEnabled] = useState(true);
 
   useEffect(() => {
     const current = db.attendance.getSession();
     setSession(current);
+
+    // Get initial location for map preview if not clocked in
+    if (!current) {
+        navigator.geolocation.getCurrentPosition(
+            (pos) => setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+            (err) => console.error(err)
+        );
+    }
 
     const interval = setInterval(() => {
         if (current) {
@@ -29,8 +40,21 @@ const Attendance: React.FC = () => {
       if (session) {
           db.attendance.clockOut();
           setSession(null);
+          setUserLocation(null);
       } else {
-          setSession(db.attendance.clockIn());
+          setLoadingLoc(true);
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                const loc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                setSession(db.attendance.clockIn(loc));
+                setUserLocation(loc);
+                setLoadingLoc(false);
+            },
+            (err) => {
+                alert("Location access is required to clock in.");
+                setLoadingLoc(false);
+            }
+          );
       }
   };
 
@@ -71,10 +95,54 @@ const Attendance: React.FC = () => {
                                     <p className="text-sm font-semibold text-text-main">{timeWorked}</p>
                                 </div>
                             </div>
-                            <button onClick={toggleClock} className={`w-full h-12 text-white font-bold rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] ${session ? 'bg-red-500 hover:bg-red-600 shadow-red-500/30' : 'bg-primary hover:bg-primary-hover shadow-primary/30'}`}>
-                                <span className="material-symbols-outlined">{session ? 'logout' : 'login'}</span>
-                                {session ? 'Clock Out' : 'Clock In'}
+                            <button disabled={loadingLoc} onClick={toggleClock} className={`w-full h-12 text-white font-bold rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] ${session ? 'bg-red-500 hover:bg-red-600 shadow-red-500/30' : 'bg-primary hover:bg-primary-hover shadow-primary/30'} ${loadingLoc ? 'opacity-70 cursor-not-allowed' : ''}`}>
+                                {loadingLoc ? <span className="material-symbols-outlined animate-spin">sync</span> : <span className="material-symbols-outlined">{session ? 'logout' : 'login'}</span>}
+                                {loadingLoc ? 'Locating...' : (session ? 'Clock Out' : 'Clock In')}
                             </button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Location Map Placeholder */}
+                <div className="md:col-span-7 lg:col-span-8">
+                    <div className="bg-white rounded-xl p-6 shadow-card border border-slate-100 h-full min-h-[300px] flex flex-col">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="font-bold text-text-main">Your Location</h3>
+                            {session?.location && <span className="text-xs text-green-600 font-bold flex items-center gap-1"><span className="material-symbols-outlined text-sm">my_location</span> Verified</span>}
+                        </div>
+                        <div className="flex-1 bg-slate-50 rounded-lg border border-slate-100 relative overflow-hidden flex items-center justify-center">
+                            {userLocation || session?.location ? (
+                                <div className="text-center">
+                                    <div className="size-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-2 animate-pulse">
+                                        <span className="material-symbols-outlined text-3xl">location_on</span>
+                                    </div>
+                                    <p className="text-sm font-bold text-slate-600">
+                                        Lat: {(session?.location?.lat || userLocation?.lat)?.toFixed(4)}, 
+                                        Lng: {(session?.location?.lng || userLocation?.lng)?.toFixed(4)}
+                                    </p>
+                                    <p className="text-xs text-slate-400 mt-1">Map visualization placeholder</p>
+                                </div>
+                            ) : (
+                                <p className="text-sm text-slate-400 flex items-center gap-2">
+                                    <span className="material-symbols-outlined">location_disabled</span>
+                                    Location unavailable
+                                </p>
+                            )}
+                        </div>
+                        <div className="mt-4 flex items-center justify-between bg-yellow-50 p-3 rounded-lg border border-yellow-100">
+                             <div className="flex items-center gap-2">
+                                 <span className="material-symbols-outlined text-yellow-600">notifications_active</span>
+                                 <div>
+                                     <p className="text-sm font-bold text-yellow-800">Automatic Reminders</p>
+                                     <p className="text-xs text-yellow-700">Get notified to clock out after 8 hours.</p>
+                                 </div>
+                             </div>
+                             <div 
+                                onClick={() => setRemindersEnabled(!remindersEnabled)}
+                                className={`w-10 h-6 rounded-full relative cursor-pointer transition-colors ${remindersEnabled ? 'bg-primary' : 'bg-gray-300'}`}
+                             >
+                                 <div className={`absolute top-1 size-4 bg-white rounded-full shadow-sm transition-all ${remindersEnabled ? 'left-5' : 'left-1'}`}></div>
+                             </div>
                         </div>
                     </div>
                 </div>

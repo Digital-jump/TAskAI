@@ -17,18 +17,24 @@ const Sidebar: React.FC = () => {
       '/payroll': ['Admin', 'HR-Admin'], // Highly sensitive
       '/chat': ['Admin', 'Developer', 'HR-Admin', 'User'], // Communication for all
       '/leave': ['Admin', 'Developer', 'HR-Admin', 'User'], // Everyone needs leave
-      '/invoices': ['Admin', 'Developer', 'User'] // Invoices for freelancers/contractors/clients
+      '/invoices': ['Admin', 'Developer', 'User'], // Invoices for freelancers/contractors/clients
+      '/meetings': ['Admin', 'Developer', 'HR-Admin', 'User'],
+      '/social': ['Admin', 'Developer', 'HR-Admin', 'User'],
+      '/ai-chat': ['Admin', 'Developer', 'HR-Admin', 'User'],
   };
 
   const navItems = [
     { name: 'Dashboard', icon: 'dashboard', path: '/dashboard' },
-    { name: 'Employees', icon: 'group', path: '/employees' },
+    { name: 'Feed', icon: 'feed', path: '/social' },
     { name: 'Projects', icon: 'view_kanban', path: '/projects' },
-    { name: 'Tickets', icon: 'confirmation_number', path: '/tickets' },
+    { name: 'Employees', icon: 'group', path: '/employees' },
+    { name: 'Meetings', icon: 'videocam', path: '/meetings' },
+    { name: 'AI Assistant', icon: 'smart_toy', path: '/ai-chat' },
     { name: 'Attendance', icon: 'calendar_month', path: '/attendance' },
     { name: 'My Leave', icon: 'flight_takeoff', path: '/leave' },
     { name: 'Payroll', icon: 'payments', path: '/payroll' },
     { name: 'Invoices', icon: 'receipt_long', path: '/invoices' },
+    { name: 'Support', icon: 'confirmation_number', path: '/tickets' },
     { name: 'Chat', icon: 'chat', path: '/chat' },
   ];
 
@@ -68,7 +74,7 @@ const Sidebar: React.FC = () => {
         </div>
       </div>
 
-      <nav className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
+      <nav className="flex-1 overflow-y-auto px-4 py-4 space-y-1 custom-scrollbar">
         {filteredNavItems.map((item) => {
           const isActive = location.pathname.startsWith(item.path);
           return (

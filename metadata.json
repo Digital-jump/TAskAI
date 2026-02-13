@@ -1,5 +1,7 @@
 {
   "name": "WorkFlow Pro",
   "description": "A comprehensive enterprise productivity platform featuring project management, HR tools, attendance tracking, payroll processing, and team collaboration.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [
+    "geolocation"
+  ]
 }
